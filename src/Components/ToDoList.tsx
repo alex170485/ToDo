@@ -13,21 +13,36 @@ type TitlePropsType = {
     RemoveTask: (taskId: string) => void;
     changeFilter: (value: "all" | "active" | "completed") => void;
     addTask: (value: string) => void;
+    changeStatus:(id: string, isDone: boolean) => void;
 };
 
 
 function ToDoList(props: TitlePropsType) {
     let [title, setTitle] = useState('');
+    let [error, setError] = useState<string|null>(null)
 
     const AddTask = () => {
-            props.addTask(title);
-            setTitle('')
+        let trimedTask = title.trim();
+        if(trimedTask) {
+            props.addTask(trimedTask);
+        } else {
+            setError('Title is required!')
         }
-    ;
-const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {setTitle(e.currentTarget.value)};
+        setTitle('');
+        };
+
+
+const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setError(null);
+    setTitle(e.currentTarget.value)};
 const allClickHandler = () => { props.changeFilter("all")};
 const activeClickHandler = () => {props.changeFilter("active")};
-const completedClickHandler = () => {props.changeFilter("completed") }
+const completedClickHandler = () => {props.changeFilter("completed") };
+const onKeyPressHandler = (e:any) => {
+    if (e.charCode === 13)
+    {
+        AddTask()}
+};
 
 
 
@@ -37,13 +52,25 @@ const completedClickHandler = () => {props.changeFilter("completed") }
         <div>
             <h3>{props.title}</h3>
             <div>
-                <input value={title} onChange={onChangeHandler} onKeyPress={e=> {if (e.charCode === 13) {AddTask()}}}/>
+                <input value={title}
+                       onChange={onChangeHandler}
+                       onKeyPress={onKeyPressHandler}
+                       className={error ? 'error' : ''}
+                />
                 <button onClick={AddTask}>+</button>
+                {error && <div className={"error-message"}>{error}</div>}
             </div>
             <ul>
                 {
                     props.tasks.map(t => {
-                        return <li key={t.id}><input type="checkbox" checked={t.isDone}/><span>{t.title}</span>
+                        const onChangeHAndler = (e:ChangeEvent<HTMLInputElement>) => {
+                           props.changeStatus(t.id, e.currentTarget.checked)
+                        }
+                        return <li key={t.id}>
+                            <input type="checkbox"
+                                   checked={t.isDone}
+                                   onChange={onChangeHAndler}/>
+                            <span>{t.title}</span>
                             <button onClick={() => {
                                 props.RemoveTask(t.id)
                             }}>X
