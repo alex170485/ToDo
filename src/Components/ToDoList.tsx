@@ -1,20 +1,17 @@
 import React, {ChangeEvent, useState} from 'react';
+import {TaskType} from "../App";
 
-type TaskType = {
-    id: string,
-    title: string,
-    isDone: boolean;
-
-}
 
 type TitlePropsType = {
+    id: string,
     title: string,
     tasks: Array<TaskType>,
     filter: string,
-    RemoveTask: (taskId: string) => void;
-    changeFilter: (value: "all" | "active" | "completed") => void;
-    addTask: (value: string) => void;
-    changeStatus:(id: string, isDone: boolean) => void;
+    RemoveTask: (taskId: string, todoListID:string) => void;
+    changeFilter: (value: "all" | "active" | "completed", todoListID:string) => void;
+    addTask: (value: string, todoListID:string) => void;
+    changeStatus:(id: string, isDone: boolean, todoListID:string) => void;
+    removeTodoList:(todoListID: string) => void;
 };
 
 
@@ -23,9 +20,9 @@ function ToDoList(props: TitlePropsType) {
     let [error, setError] = useState<string|null>(null)
 
     const AddTask = () => {
-        let trimmedTask = title.trim();
-        if(trimmedTask) {
-            props.addTask(trimmedTask);
+        let taskTitle = title.trim();
+        if(taskTitle) {
+            props.addTask(taskTitle, props.id);
         } else {
             setError('Title is required!')
         }
@@ -41,9 +38,10 @@ function ToDoList(props: TitlePropsType) {
 const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setError(null);
     setTitle(e.currentTarget.value)};
-const allClickHandler = () => { props.changeFilter("all")};
-const activeClickHandler = () => {props.changeFilter("active")};
-const completedClickHandler = () => {props.changeFilter("completed") };
+const allClickHandler = () => { props.changeFilter("all", props.id)};
+const activeClickHandler = () => {props.changeFilter("active", props.id)};
+const completedClickHandler = () => {props.changeFilter("completed", props.id) };
+const removeTodoList = () => {props.removeTodoList(props.id)};
 
 
 
@@ -52,7 +50,7 @@ const completedClickHandler = () => {props.changeFilter("completed") };
 
     return (
         <div>
-            <h3>{props.title}</h3>
+            <h3>{props.title}<button onClick={removeTodoList}>X</button></h3>
             <div>
                 <input value={title}
                        onChange={onChangeHandler}
@@ -66,7 +64,7 @@ const completedClickHandler = () => {props.changeFilter("completed") };
                 {
                     props.tasks.map(t => {
                         const onChangeHAndler = (e:ChangeEvent<HTMLInputElement>) => {
-                           props.changeStatus(t.id, e.currentTarget.checked)
+                           props.changeStatus(t.id, e.currentTarget.checked, props.id)
                         }
                         return <li className={t.isDone ? 'is-done' : ''} key={t.id} >
                             <input type="checkbox"
@@ -74,7 +72,7 @@ const completedClickHandler = () => {props.changeFilter("completed") };
                                    onChange={onChangeHAndler}/>
                             <span>{t.title}</span>
                             <button onClick={() => {
-                                props.RemoveTask(t.id)
+                                props.RemoveTask(t.id, props.id)
                             }}>X
                             </button>
                         </li>
