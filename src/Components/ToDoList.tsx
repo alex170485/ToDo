@@ -43,11 +43,6 @@ const activeClickHandler = () => {props.changeFilter("active", props.id)};
 const completedClickHandler = () => {props.changeFilter("completed", props.id) };
 const removeTodoList = () => {props.removeTodoList(props.id)};
 
-
-
-
-
-
     return (
         <div>
             <h3>{props.title}<button onClick={removeTodoList}>X</button></h3>
