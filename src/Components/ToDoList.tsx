@@ -34,7 +34,6 @@ function ToDoList(props: TitlePropsType) {
             AddTask()}
     };
 
-
 const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setError(null);
     setTitle(e.currentTarget.value)};
