@@ -1,4 +1,4 @@
-import {todoListsReducer} from './todolists-reduser';
+import {RemoveTodoListAC, todoListsReducer} from './todolists-reduser';
 import {v1} from 'uuid';
 import {FilterValueType, TodoListType} from '../App';
 import {ActionType} from "./todolists-reduser";
@@ -13,7 +13,7 @@ test('correct todolist should be removed', () => {
     ]
 
     const action: ActionType = { type: 'REMOVE-TODOLIST', id: todolistId1}
-    const endState = todoListsReducer(startState, action)
+    const endState = todoListsReducer(startState, RemoveTodoListAC(todolistId1))
 
     expect(endState.length).toBe(1);
     expect(endState[0].id).toBe(todolistId2);
