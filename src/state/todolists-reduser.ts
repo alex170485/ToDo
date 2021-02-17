@@ -57,10 +57,8 @@ export function todoListsReducer(state:Array<TodoListType> = initialState, actio
           })
           return todoLists
       }
-
       default:
           return state;
-
   }
 }
 

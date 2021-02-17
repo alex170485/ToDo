@@ -1,9 +1,10 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useCallback, useState} from 'react';
 import {TaskType} from "../App";
-import AddItemForm from "../AddItemForm";
+
 import {EditableSpan} from "../EditableSpan";
 import {Button, Checkbox, IconButton} from "@material-ui/core";
 import {CheckBox, Delete} from "@material-ui/icons";
+import AddItemForm from "../AddItemForm";
 
 
 type TitlePropsType = {
@@ -21,46 +22,33 @@ type TitlePropsType = {
 };
 
 
-function ToDoList(props: TitlePropsType) {
-    /* let [title, setTitle] = useState('');
-     let [error, setError] = useState<string|null>(null)*/
+const ToDoList = React.memo((props: TitlePropsType) => {
+    console.log("Todolist called")
 
-    /*    const AddTask = () => {
-            let taskTitle = title.trim();
-            if(taskTitle) {
-                props.addTask(taskTitle, props.id);
-            } else {
-                setError('Title is required!')
-            }
-            setTitle('');
-            };*/
-    /*  const onKeyPressHandler = (e:any) => {
-          if (e.charCode === 13)
-          {
-              AddTask()}
-      };*/
-
-    /*const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setError(null);
-        setTitle(e.currentTarget.value)};*/
-
-    const addTask = (title: string) => {
+    const addTask = useCallback((title: string) => {
         props.addTask(title, props.id)
-    }
-    const allClickHandler = () => {
+    }, [props.addTask, props.id])
+    const allClickHandler = useCallback(() => {
         props.changeFilter("all", props.id)
-    };
-    const activeClickHandler = () => {
+    }, [])
+    const activeClickHandler = useCallback(() => {
         props.changeFilter("active", props.id)
-    };
-    const completedClickHandler = () => {
+    }, [])
+    const completedClickHandler = useCallback(() => {
         props.changeFilter("completed", props.id)
-    };
+    }, [])
     const removeTodoList = () => {
         props.removeTodoList(props.id)
     };
     const changeTodoListTitle = (title: string) => {
         props.changeTodoListTitle(title, props.id)
+    }
+    let tasksForTodolist = props.tasks;
+    if (props.filter === "active") {
+        tasksForTodolist = props.tasks.filter(t => t.isDone === false);
+    }
+    if (props.filter === "completed") {
+        tasksForTodolist = props.tasks.filter(t => t.isDone === true)
     }
 
 
@@ -74,20 +62,11 @@ function ToDoList(props: TitlePropsType) {
                 </IconButton>
             </h3>
             <AddItemForm addItem={addTask}/>
-            {/*<div>
-                <input value={title}
-                       onChange={onChangeHandler}
-                       onKeyPress={onKeyPressHandler}
-                       className={error ? 'error' : ''}
-                />
-                <button onClick={AddTask}>+</button>
-                {error && <div className={"error-message"}>{error}</div>}
-            </div>*/}
             <ul style={{listStyle: 'none', padding: '0px'}}>
                 {
-                    props.tasks.map(t => {
+                    tasksForTodolist.map(t => {
 
-                        const onChangeHAndler = (e: ChangeEvent<HTMLInputElement>) => {
+                        const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
                             props.changeStatus(t.id, e.currentTarget.checked, props.id)
                         }
                         const changeTaskTitle = (title: string) => {
@@ -96,14 +75,11 @@ function ToDoList(props: TitlePropsType) {
                         }
                         return <li className={t.isDone ? 'is-done' : ''} key={t.id}>
                             <Checkbox
-                            color={'primary'}
-                            checked={t.isDone}
-                            onChange={onChangeHAndler}
+                                color={'primary'}
+                                checked={t.isDone}
+                                onChange={onChangeHandler}
                             />
-                            {/*<input type="checkbox"
-                                   checked={t.isDone}
-                                   onChange={onChangeHAndler}/>*/}
-                            {/*<span>{t.title}</span>*/}
+
                             <EditableSpan
                                 title={t.title}
                                 changeTitle={changeTaskTitle}
@@ -143,6 +119,6 @@ function ToDoList(props: TitlePropsType) {
             </div>
         </div>
     );
-}
+})
 
 export default ToDoList;

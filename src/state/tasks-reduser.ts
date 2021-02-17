@@ -52,18 +52,15 @@ export function tasksReducer(state: TaskStateType = inicialState, action: Action
             }
         }
         case 'CHANGE-TASK-STATUS' : {
-            return {
-                ...state,
-                [action.todolistID]: state[action.todolistID]
-                    .map(task => {
-                        if (task.id !== action.taskID) {
-                            return task
-                        } else {
-                            return {...task, isDone: action.isDone}
-                        }
-                    })
+           let todolistTasks = state[action.todolistID];
+           let task = todolistTasks.find(t=>t.id ===action.taskID)
+            if(task) {
+                task.isDone = action.isDone
             }
+            state[action.todolistID] = [...todolistTasks];
+            return ({...state})
         }
+
         case 'CHANGE-TITLE-TASK' : {
             return {
                 ...state,
